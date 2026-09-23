@@ -1,0 +1,31 @@
+# FaviconForge Pro - Pasta Output
+# Permitir acesso total aos arquivos gerados
+
+# Permitir acesso a todos os arquivos
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+
+# Bloquear apenas PHP
+<FilesMatch "\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Desabilitar listagem mas permitir acesso
+Options -Indexes +FollowSymLinks
+
+# Tipos MIME
+AddType image/png .png
+AddType image/x-icon .ico
+AddType application/zip .zip
+AddType application/json .json

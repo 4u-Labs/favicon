@@ -1,0 +1,98 @@
+# =============================================
+# FaviconForge Pro - Apache Configuration
+# =============================================
+
+# Habilitar mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirecionar HTTP para HTTPS (descomente em produção)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Segurança - Bloquear acesso a arquivos sensíveis
+<FilesMatch "\.(php|ini|log|sh|sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Permitir apenas arquivos públicos PHP
+<FilesMatch "^(index\.php|generate\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+
+# Bloquear acesso ao config.php
+<Files "config.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</Files>
+
+# Configurações de upload (ajuste conforme necessário)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 12M
+    php_value post_max_size 12M
+    php_value max_execution_time 120
+    php_value max_input_time 120
+    php_value memory_limit 256M
+</IfModule>
+
+# Compressão GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Cache para arquivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+</IfModule>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy (ajuste conforme necessário)
+    # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data: blob:;"
+</IfModule>
+
+# Prevenir listagem de diretórios
+Options -Indexes
+
+# Definir charset padrão
+AddDefaultCharset UTF-8
+
+# MIME types
+<IfModule mod_mime.c>
+    AddType application/javascript .js
+    AddType text/css .css
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
+    AddType application/json .json
+    AddType application/manifest+json .webmanifest
+</IfModule>
